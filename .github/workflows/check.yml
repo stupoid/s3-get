@@ -1,0 +1,34 @@
+name: Pull request check
+on: [pull_request]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr-check-${{ github.event.number }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          show-progress: false
+      - uses: actions/setup-go@v4
+        with:
+          go-version: "1.21.1"
+      - run: make test
+
+  lint:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          show-progress: false
+      - uses: actions/setup-go@v4
+        with:
+          go-version: "1.21.1"
+      - uses: golangci/golangci-lint-action@v3
+        with:
+          version: "v1.54"
